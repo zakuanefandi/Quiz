@@ -94,31 +94,26 @@
       display: none;
     }
 
-    /* Header & Live Score Info */
+    /* Header & Status Info */
     .quiz-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+      gap: 8px;
     }
 
-    .progress-pill {
-      background: #F1F5F9;
-      color: var(--primary-purple);
-      padding: 6px 14px;
+    .pill {
+      padding: 6px 12px;
       border-radius: 20px;
       font-weight: 800;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      white-space: nowrap;
     }
 
-    .score-pill {
-      background: #FEF3C7;
-      color: #D97706;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: 800;
-      font-size: 0.85rem;
-    }
+    .progress-pill { background: #F1F5F9; color: var(--primary-purple); }
+    .timer-pill { background: #E0E7FF; color: #3730A3; }
+    .score-pill { background: #FEF3C7; color: #D97706; }
 
     .question-title {
       font-size: 1.25rem;
@@ -134,12 +129,13 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      margin-bottom: 20px;
     }
 
     .option-btn {
       width: 100%;
-      min-height: 56px;
-      padding: 14px 18px;
+      min-height: 54px;
+      padding: 12px 18px;
       border: 3px solid #E2E8F0;
       background: #FFFFFF;
       color: var(--text-dark);
@@ -148,7 +144,7 @@
       font-weight: 700;
       text-align: left;
       cursor: pointer;
-      transition: all 0.2s ease-in-out;
+      transition: all 0.15s ease-in-out;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -161,7 +157,7 @@
     .option-btn:nth-child(3) { border-color: #10B981; box-shadow: 0 4px 0 #059669; color: #065F46; }
     .option-btn:nth-child(4) { border-color: #F59E0B; box-shadow: 0 4px 0 #D97706; color: #92400E; }
 
-    /* Correct Answer Feedback */
+    /* Correct / Wrong States */
     .option-btn.correct-ans {
       background: #D1FAE5 !important;
       border-color: #10B981 !important;
@@ -169,7 +165,6 @@
       box-shadow: 0 4px 0 #059669 !important;
     }
 
-    /* Wrong Answer Feedback */
     .option-btn.wrong-ans {
       background: #FEE2E2 !important;
       border-color: #EF4444 !important;
@@ -177,9 +172,45 @@
       box-shadow: 0 4px 0 #DC2626 !important;
     }
 
-    .option-btn:disabled {
+    /* Navigation Footer Controls */
+    .nav-footer {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn-prev {
+      background: #E2E8F0;
+      color: #475569;
+      box-shadow: 0 4px 0 #CBD5E1;
+    }
+    .btn-prev:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #CBD5E1;
+    }
+    .btn-prev:disabled {
+      opacity: 0.5;
       cursor: not-allowed;
-      opacity: 0.9;
+    }
+
+    .btn-next {
+      background: var(--primary-purple);
+      color: white;
+      box-shadow: 0 4px 0 var(--primary-purple-hover);
+    }
+    .btn-next:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--primary-purple-hover);
     }
 
     /* Result Screen */
@@ -189,8 +220,8 @@
     }
 
     .score-circle {
-      width: 120px;
-      height: 120px;
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       background: var(--bg-gradient);
       color: white;
@@ -198,31 +229,41 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 20px auto;
+      margin: 15px auto;
       box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
     }
 
     .score-number {
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-family: 'Fredoka', sans-serif;
       line-height: 1;
     }
 
     .score-label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
+    .time-taken-badge {
+      background: #F1F5F9;
+      color: #334155;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+
     .restart-btn {
-      margin-top: 20px;
+      margin-top: 10px;
       width: 100%;
-      padding: 16px;
+      padding: 15px;
       background: var(--primary-purple);
       color: white;
       border: none;
       border-radius: 14px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       cursor: pointer;
       box-shadow: 0 6px 0 var(--primary-purple-hover);
@@ -255,11 +296,19 @@
   <!-- Quiz Screen -->
   <div id="quiz-screen" class="hidden">
     <div class="quiz-header">
-      <span class="progress-pill" id="progress-text">Question 1/10</span>
-      <span class="score-pill" id="score-text">Score: 0</span>
+      <span class="pill progress-pill" id="progress-text">1/10</span>
+      <span class="pill timer-pill" id="timer-text">⏱️ 00:00</span>
+      <span class="pill score-pill" id="score-text">Score: 0</span>
     </div>
+    
     <h2 class="question-title" id="question-text">Question loading...</h2>
     <div class="options-grid" id="options-container"></div>
+
+    <!-- Navigation Footer -->
+    <div class="nav-footer">
+      <button class="nav-btn btn-prev" id="prev-btn" onclick="prevQuestion()">← Prev</button>
+      <button class="nav-btn btn-next" id="next-btn" onclick="nextQuestion()">Next →</button>
+    </div>
   </div>
 
   <!-- Result Screen -->
@@ -269,7 +318,8 @@
       <span class="score-number" id="final-score">0/0</span>
       <span class="score-label">Score</span>
     </div>
-    <p id="feedback-text" style="color: #64748B; font-weight: 700;"></p>
+    <div class="time-taken-badge" id="time-taken-text">⏱️ Total Time Taken: 0m 0s</div>
+    <p id="feedback-text" style="color: #64748B; font-weight: 700; margin-bottom: 10px;"></p>
     <button class="restart-btn" onclick="location.reload()">🔄 Load New Quiz</button>
   </div>
 </div>
@@ -277,7 +327,9 @@
 <script>
   let questions = [];
   let currentIndex = 0;
-  let score = 0;
+  let userAnswers = []; // Tracks selected answer text per question index
+  let timerInterval = null;
+  let totalSeconds = 0;
 
   document.getElementById('csv-file').addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -289,8 +341,10 @@
       complete: function(results) {
         questions = results.data;
         if (questions.length > 0) {
+          userAnswers = new Array(questions.length).fill(null);
           document.getElementById('upload-screen').classList.add('hidden');
           document.getElementById('quiz-screen').classList.remove('hidden');
+          startTimer();
           showQuestion();
         } else {
           alert('Invalid CSV file or empty dataset.');
@@ -299,48 +353,77 @@
     });
   });
 
+  function startTimer() {
+    totalSeconds = 0;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      totalSeconds++;
+      const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+      const secs = (totalSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('timer-text').innerText = `⏱️ ${mins}:${secs}`;
+    }, 1000);
+  }
+
   function showQuestion() {
     const q = questions[currentIndex];
     
-    // Update question progress and current score at top
-    document.getElementById('progress-text').innerText = `Question ${currentIndex + 1} of ${questions.length}`;
-    document.getElementById('score-text').innerText = `Score: ${score}`;
+    // Update headers
+    document.getElementById('progress-text').innerText = `${currentIndex + 1}/${questions.length}`;
+    document.getElementById('score-text').innerText = `Score: ${calculateCurrentScore()}`;
     document.getElementById('question-text').innerText = q.Question;
     
+    // Manage Prev Button State
+    document.getElementById('prev-btn').disabled = (currentIndex === 0);
+    
+    // Manage Next Button Label
+    document.getElementById('next-btn').innerText = (currentIndex === questions.length - 1) ? 'Finish 🏁' : 'Next →';
+
     const container = document.getElementById('options-container');
     container.innerHTML = '';
 
-    // Collect options from CSV columns
     const choices = [q.OptionA, q.OptionB, q.OptionC, q.OptionD].filter(Boolean);
+    const savedAnswer = userAnswers[currentIndex];
 
     choices.forEach(choice => {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
       btn.innerText = choice;
-      btn.onclick = () => selectAnswer(btn, choice, q.Correct);
+      
+      // If already answered before, render the state
+      if (savedAnswer !== null) {
+        if (choice.trim().toLowerCase() === q.Correct.trim().toLowerCase()) {
+          btn.classList.add('correct-ans');
+          btn.innerText = `${choice}  ✓`;
+        } else if (choice.trim().toLowerCase() === savedAnswer.trim().toLowerCase()) {
+          btn.classList.add('wrong-ans');
+          btn.innerText = `${choice}  ✗`;
+        }
+        btn.disabled = true; // Lock choices if already answered in review mode
+      } else {
+        btn.onclick = () => selectAnswer(btn, choice, q.Correct);
+      }
+      
       container.appendChild(btn);
     });
   }
 
   function selectAnswer(selectedBtn, selectedText, correctText) {
+    userAnswers[currentIndex] = selectedText;
     const allButtons = document.querySelectorAll('.option-btn');
     
-    // Disable all buttons to prevent double-tapping
+    // Lock all buttons on this question once selected
     allButtons.forEach(btn => btn.disabled = true);
 
     const isCorrect = selectedText.trim().toLowerCase() === correctText.trim().toLowerCase();
 
     if (isCorrect) {
-      score++;
       selectedBtn.classList.add('correct-ans');
       selectedBtn.innerText = `${selectedText}  ✓`;
-      document.getElementById('score-text').innerText = `Score: ${score}`;
     } else {
-      // Highlight selected wrong answer
       selectedBtn.classList.add('wrong-ans');
       selectedBtn.innerText = `${selectedText}  ✗`;
 
-      // Highlight the correct answer button
+      // Highlight correct answer
       allButtons.forEach(btn => {
         if (btn.innerText.trim().toLowerCase() === correctText.trim().toLowerCase()) {
           btn.classList.add('correct-ans');
@@ -349,20 +432,63 @@
       });
     }
 
-    // Delay 1.2 seconds before loading next question so player sees feedback
-    setTimeout(() => {
-      currentIndex++;
-      if (currentIndex < questions.length) {
-        showQuestion();
-      } else {
-        showResults();
+    document.getElementById('score-text').innerText = `Score: ${calculateCurrentScore()}`;
+  }
+
+  function calculateCurrentScore() {
+    let score = 0;
+    questions.forEach((q, idx) => {
+      const ans = userAnswers[idx];
+      if (ans && ans.trim().toLowerCase() === q.Correct.trim().toLowerCase()) {
+        score++;
       }
-    }, 1200);
+    });
+    return score;
+  }
+
+  function prevQuestion() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      showQuestion();
+    }
+  }
+
+  function nextQuestion() {
+    if (currentIndex < questions.length - 1) {
+      currentIndex++;
+      showQuestion();
+    } else {
+      showResults();
+    }
   }
 
   function showResults() {
+    clearInterval(timerInterval); // Stop timer
     document.getElementById('quiz-screen').classList.add('hidden');
     document.getElementById('result-screen').classList.remove('hidden');
+    
+    const finalScore = calculateCurrentScore();
+    document.getElementById('final-score').innerText = `${finalScore}/${questions.length}`;
+    
+    // Format total time taken
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    let timeString = mins > 0 ? `${mins}m ${secs}s` : `${secs} seconds`;
+    document.getElementById('time-taken-text').innerText = `⏱️ Total Time Taken: ${timeString}`;
+    
+    const percentage = (finalScore / questions.length) * 100;
+    const feedback = document.getElementById('feedback-text');
+    
+    if (percentage === 100) feedback.innerText = "🏆 Perfect Score! You're a Genius!";
+    else if (percentage >= 70) feedback.innerText = "🌟 Great job! Almost perfect!";
+    else if (percentage >= 50) feedback.innerText = "👍 Good effort! Keep practicing.";
+    else feedback.innerText = "💪 Don't give up! Try again.";
+  }
+</script>
+
+</body>
+</html>
+en').classList.remove('hidden');
     
     document.getElementById('final-score').innerText = `${score}/${questions.length}`;
     
