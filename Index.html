@@ -15,10 +15,8 @@
       --text-dark: #2D3748;
       --primary-purple: #7C3AED;
       --primary-purple-hover: #6D28D9;
-      --accent-pink: #EC4899;
       --accent-green: #10B981;
-      --accent-yellow: #F59E0B;
-      --accent-blue: #3B82F6;
+      --accent-red: #EF4444;
       --border-radius: 20px;
     }
 
@@ -48,10 +46,9 @@
       padding: 28px 20px;
       position: relative;
       overflow: hidden;
-      transition: transform 0.2s ease;
     }
 
-    h1, h2, h3 {
+    h1, h2 {
       font-family: 'Fredoka', sans-serif;
       color: var(--text-dark);
       text-align: center;
@@ -86,7 +83,7 @@
       border-radius: 14px;
       cursor: pointer;
       box-shadow: 0 6px 15px rgba(236, 72, 153, 0.3);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease;
     }
 
     .custom-file-upload:active {
@@ -97,7 +94,7 @@
       display: none;
     }
 
-    /* Header & Progress Info */
+    /* Header & Live Score Info */
     .quiz-header {
       display: flex;
       justify-content: space-between;
@@ -108,6 +105,15 @@
     .progress-pill {
       background: #F1F5F9;
       color: var(--primary-purple);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .score-pill {
+      background: #FEF3C7;
+      color: #D97706;
       padding: 6px 14px;
       border-radius: 20px;
       font-weight: 800;
@@ -142,22 +148,38 @@
       font-weight: 700;
       text-align: left;
       cursor: pointer;
-      transition: all 0.15s ease-in-out;
+      transition: all 0.2s ease-in-out;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 4px 0 #E2E8F0;
     }
 
-    /* Vibrant color variations per option */
+    /* Vibrant default color variations */
     .option-btn:nth-child(1) { border-color: #3B82F6; box-shadow: 0 4px 0 #2563EB; color: #1E40AF; }
     .option-btn:nth-child(2) { border-color: #EC4899; box-shadow: 0 4px 0 #DB2777; color: #9D174D; }
     .option-btn:nth-child(3) { border-color: #10B981; box-shadow: 0 4px 0 #059669; color: #065F46; }
     .option-btn:nth-child(4) { border-color: #F59E0B; box-shadow: 0 4px 0 #D97706; color: #92400E; }
 
-    .option-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 transparent !important;
+    /* Correct Answer Feedback */
+    .option-btn.correct-ans {
+      background: #D1FAE5 !important;
+      border-color: #10B981 !important;
+      color: #065F46 !important;
+      box-shadow: 0 4px 0 #059669 !important;
+    }
+
+    /* Wrong Answer Feedback */
+    .option-btn.wrong-ans {
+      background: #FEE2E2 !important;
+      border-color: #EF4444 !important;
+      color: #991B1B !important;
+      box-shadow: 0 4px 0 #DC2626 !important;
+    }
+
+    .option-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.9;
     }
 
     /* Result Screen */
@@ -234,6 +256,7 @@
   <div id="quiz-screen" class="hidden">
     <div class="quiz-header">
       <span class="progress-pill" id="progress-text">Question 1/10</span>
+      <span class="score-pill" id="score-text">Score: 0</span>
     </div>
     <h2 class="question-title" id="question-text">Question loading...</h2>
     <div class="options-grid" id="options-container"></div>
@@ -279,35 +302,62 @@
   function showQuestion() {
     const q = questions[currentIndex];
     
-    // Update question count pill
+    // Update question progress and current score at top
     document.getElementById('progress-text').innerText = `Question ${currentIndex + 1} of ${questions.length}`;
+    document.getElementById('score-text').innerText = `Score: ${score}`;
     document.getElementById('question-text').innerText = q.Question;
     
     const container = document.getElementById('options-container');
     container.innerHTML = '';
 
-    // Collect choices dynamically
+    // Collect options from CSV columns
     const choices = [q.OptionA, q.OptionB, q.OptionC, q.OptionD].filter(Boolean);
 
     choices.forEach(choice => {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
       btn.innerText = choice;
-      btn.onclick = () => selectAnswer(choice, q.Correct);
+      btn.onclick = () => selectAnswer(btn, choice, q.Correct);
       container.appendChild(btn);
     });
   }
 
-  function selectAnswer(selected, correct) {
-    if (selected.trim().toLowerCase() === correct.trim().toLowerCase()) {
+  function selectAnswer(selectedBtn, selectedText, correctText) {
+    const allButtons = document.querySelectorAll('.option-btn');
+    
+    // Disable all buttons to prevent double-tapping
+    allButtons.forEach(btn => btn.disabled = true);
+
+    const isCorrect = selectedText.trim().toLowerCase() === correctText.trim().toLowerCase();
+
+    if (isCorrect) {
       score++;
-    }
-    currentIndex++;
-    if (currentIndex < questions.length) {
-      showQuestion();
+      selectedBtn.classList.add('correct-ans');
+      selectedBtn.innerText = `${selectedText}  ✓`;
+      document.getElementById('score-text').innerText = `Score: ${score}`;
     } else {
-      showResults();
+      // Highlight selected wrong answer
+      selectedBtn.classList.add('wrong-ans');
+      selectedBtn.innerText = `${selectedText}  ✗`;
+
+      // Highlight the correct answer button
+      allButtons.forEach(btn => {
+        if (btn.innerText.trim().toLowerCase() === correctText.trim().toLowerCase()) {
+          btn.classList.add('correct-ans');
+          btn.innerText = `${btn.innerText}  ✓`;
+        }
+      });
     }
+
+    // Delay 1.2 seconds before loading next question so player sees feedback
+    setTimeout(() => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }, 1200);
   }
 
   function showResults() {
