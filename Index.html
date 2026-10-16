@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSV Web Quiz Engine</title>
+  <!-- PapaParse library for reading CSV files -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; padding: 20px; }
+    .quiz-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+    .btn { display: block; width: 100%; margin: 8px 0; padding: 12px; border: 2px solid #007bff; background: white; color: #007bff; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .btn:hover { background: #007bff; color: white; }
+    .hidden { display: none; }
+    .score-box { text-align: center; font-size: 1.4rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <!-- Upload Section -->
+  <div id="upload-screen">
+    <h2>Upload Question Bank</h2>
+    <p>Select your <code>.csv</code> file to generate the quiz:</p>
+    <input type="file" id="csv-file" accept=".csv" />
+  </div>
+
+  <!-- Quiz Play Section -->
+  <div id="quiz-screen" class="hidden">
+    <h3 id="question-text">Question goes here</h3>
+    <div id="options-container"></div>
+  </div>
+
+  <!-- Results Section -->
+  <div id="result-screen" class="hidden score-box">
+    <h2>Quiz Finished! 🎉</h2>
+    <p id="final-score"></p>
+    <button class="btn" onclick="location.reload()">Upload Another CSV</button>
+  </div>
+</div>
+
+<script>
+  let questions = [];
+  let currentIndex = 0;
+  let score = 0;
+
+  document.getElementById('csv-file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Parse CSV
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        questions = results.data;
+        if (questions.length > 0) {
+          document.getElementById('upload-screen').classList.add('hidden');
+          document.getElementById('quiz-screen').classList.remove('hidden');
+          showQuestion();
+        } else {
+          alert('CSV file appears to be empty or misformatted.');
+        }
+      }
+    });
+  });
+
+  function showQuestion() {
+    const q = questions[currentIndex];
+    document.getElementById('question-text').innerText = `${currentIndex + 1}. ${q.Question}`;
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+
+    // Extract choices from CSV columns
+    const choices = [q.OptionA, q.OptionB, q.OptionC, q.OptionD].filter(Boolean);
+    
+    choices.forEach(choice => {
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.innerText = choice;
+      btn.onclick = () => selectAnswer(choice, q.Correct);
+      container.appendChild(btn);
+    });
+  }
+
+  function selectAnswer(selected, correct) {
+    if (selected.trim().toLowerCase() === correct.trim().toLowerCase()) {
+      score++;
+    }
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      showQuestion();
+    } else {
+      document.getElementById('quiz-screen').classList.add('hidden');
+      document.getElementById('result-screen').classList.remove('hidden');
+      document.getElementById('final-score').innerText = `You scored ${score} out of ${questions.length}`;
+    }
+  }
+</script>
+
+</body>
+</html>
