@@ -43,9 +43,8 @@
       max-width: 500px;
       border-radius: var(--border-radius);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-      padding: 28px 20px;
+      padding: 24px 18px;
       position: relative;
-      overflow: hidden;
     }
 
     h1, h2 {
@@ -61,7 +60,7 @@
     }
 
     .upload-box h1 {
-      font-size: 1.8rem;
+      font-size: 1.7rem;
       margin-bottom: 8px;
       color: var(--primary-purple);
     }
@@ -94,20 +93,21 @@
       display: none;
     }
 
-    /* Header & Status Info */
+    /* Fixed Header & Status Info (Prevents squishing on mobile) */
     .quiz-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
-      gap: 8px;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .pill {
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 20px;
       font-weight: 800;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       white-space: nowrap;
     }
 
@@ -116,12 +116,13 @@
     .score-pill { background: #FEF3C7; color: #D97706; }
 
     .question-title {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--text-dark);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       text-align: left;
       line-height: 1.4;
+      word-break: break-word;
     }
 
     /* Options Container Grid */
@@ -134,13 +135,13 @@
 
     .option-btn {
       width: 100%;
-      min-height: 54px;
-      padding: 12px 18px;
+      min-height: 52px;
+      padding: 12px 16px;
       border: 3px solid #E2E8F0;
       background: #FFFFFF;
       color: var(--text-dark);
       border-radius: 14px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       text-align: left;
       cursor: pointer;
@@ -149,6 +150,7 @@
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 4px 0 #E2E8F0;
+      word-break: break-word;
     }
 
     /* Vibrant default color variations */
@@ -289,87 +291,8 @@
     <p>Upload your CSV question bank to start playing!</p>
     <label for="csv-file" class="custom-file-upload">
       📁 Select CSV File
-    </label>
-    <input type="file" id="csv-file" accept=".csv" />
-  </div>
-
-  <!-- Quiz Screen -->
-  <div id="quiz-screen" class="hidden">
-    <div class="quiz-header">
-      <span class="pill progress-pill" id="progress-text">1/10</span>
-      <span class="pill timer-pill" id="timer-text">⏱️ 00:00</span>
-      <span class="pill score-pill" id="score-text">Score: 0</span>
-    </div>
     
-    <h2 class="question-title" id="question-text">Question loading...</h2>
-    <div class="options-grid" id="options-container"></div>
-
-    <!-- Navigation Footer -->
-    <div class="nav-footer">
-      <button class="nav-btn btn-prev" id="prev-btn" onclick="prevQuestion()">← Prev</button>
-      <button class="nav-btn btn-next" id="next-btn" onclick="nextQuestion()">Next →</button>
-    </div>
-  </div>
-
-  <!-- Result Screen -->
-  <div id="result-screen" class="hidden result-box">
-    <h1>🎉 Quiz Completed!</h1>
-    <div class="score-circle">
-      <span class="score-number" id="final-score">0/0</span>
-      <span class="score-label">Score</span>
-    </div>
-    <div class="time-taken-badge" id="time-taken-text">⏱️ Total Time Taken: 0m 0s</div>
-    <p id="feedback-text" style="color: #64748B; font-weight: 700; margin-bottom: 10px;"></p>
-    <button class="restart-btn" onclick="location.reload()">🔄 Load New Quiz</button>
-  </div>
-</div>
-
-<script>
-  let questions = [];
-  let currentIndex = 0;
-  let userAnswers = []; // Tracks selected answer text per question index
-  let timerInterval = null;
-  let totalSeconds = 0;
-
-  document.getElementById('csv-file').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
-        questions = results.data;
-        if (questions.length > 0) {
-          userAnswers = new Array(questions.length).fill(null);
-          document.getElementById('upload-screen').classList.add('hidden');
-          document.getElementById('quiz-screen').classList.remove('hidden');
-          startTimer();
-          showQuestion();
-        } else {
-          alert('Invalid CSV file or empty dataset.');
-        }
-      }
-    });
-  });
-
-  function startTimer() {
-    totalSeconds = 0;
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      totalSeconds++;
-      const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-      const secs = (totalSeconds % 60).toString().padStart(2, '0');
-      document.getElementById('timer-text').innerText = `⏱️ ${mins}:${secs}`;
-    }, 1000);
-  }
-
-  function showQuestion() {
-    const q = questions[currentIndex];
-    
-    // Update headers
-    document.getElementById('progress-text').innerText = `${currentIndex + 1}/${questions.length}`;
-    document.getElementById('score-text').innerText = `Score: ${calculateCurrentScore()}`;
+culateCurrentScore()}`;
     document.getElementById('question-text').innerText = q.Question;
     
     // Manage Prev Button State
