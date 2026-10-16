@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Interactive Quiz Engine</title>
   <!-- PapaParse for reading CSV files -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <!-- Google Fonts for modern typography -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -34,17 +34,17 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 12px;
     }
 
     .quiz-container {
       background: var(--card-bg);
       width: 100%;
-      max-width: 500px;
+      max-width: 460px;
       border-radius: var(--border-radius);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-      padding: 24px 18px;
-      position: relative;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      padding: 20px 16px;
+      margin: auto;
     }
 
     h1, h2 {
@@ -53,61 +53,58 @@
       text-align: center;
     }
 
-    /* Upload Screen Styling */
+    /* Upload Screen */
     .upload-box {
       text-align: center;
-      padding: 20px 10px;
+      padding: 15px 5px;
     }
 
     .upload-box h1 {
-      font-size: 1.7rem;
+      font-size: 1.6rem;
       margin-bottom: 8px;
       color: var(--primary-purple);
     }
 
     .upload-box p {
       color: #64748B;
-      font-size: 0.95rem;
-      margin-bottom: 24px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
     }
 
     .custom-file-upload {
-      display: inline-block;
+      display: block;
       width: 100%;
-      padding: 16px;
+      padding: 14px;
       background: var(--bg-gradient);
       color: white;
       font-weight: 800;
-      font-size: 1.1rem;
-      border-radius: 14px;
+      font-size: 1rem;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 6px 15px rgba(236, 72, 153, 0.3);
-      transition: transform 0.15s ease;
-    }
-
-    .custom-file-upload:active {
-      transform: scale(0.98);
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
     }
 
     input[type="file"] {
       display: none;
     }
 
-    /* Fixed Header & Status Info (Prevents squishing on mobile) */
+    /* Quiz Header Grid Layout */
     .quiz-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 6px;
-      flex-wrap: wrap;
+      margin-bottom: 16px;
     }
 
     .pill {
-      padding: 6px 10px;
-      border-radius: 20px;
+      padding: 6px 4px;
+      border-radius: 12px;
       font-weight: 800;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
@@ -116,114 +113,109 @@
     .score-pill { background: #FEF3C7; color: #D97706; }
 
     .question-title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--text-dark);
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       text-align: left;
-      line-height: 1.4;
-      word-break: break-word;
+      line-height: 1.35;
+      word-wrap: break-word;
     }
 
-    /* Options Container Grid */
+    /* Options Stack */
     .options-grid {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
     .option-btn {
       width: 100%;
-      min-height: 52px;
-      padding: 12px 16px;
-      border: 3px solid #E2E8F0;
+      min-height: 48px;
+      padding: 10px 14px;
+      border: 2px solid #E2E8F0;
       background: #FFFFFF;
       color: var(--text-dark);
-      border-radius: 14px;
-      font-size: 0.95rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
       font-weight: 700;
       text-align: left;
       cursor: pointer;
-      transition: all 0.15s ease-in-out;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 0 #E2E8F0;
+      box-shadow: 0 3px 0 #E2E8F0;
       word-break: break-word;
     }
 
-    /* Vibrant default color variations */
-    .option-btn:nth-child(1) { border-color: #3B82F6; box-shadow: 0 4px 0 #2563EB; color: #1E40AF; }
-    .option-btn:nth-child(2) { border-color: #EC4899; box-shadow: 0 4px 0 #DB2777; color: #9D174D; }
-    .option-btn:nth-child(3) { border-color: #10B981; box-shadow: 0 4px 0 #059669; color: #065F46; }
-    .option-btn:nth-child(4) { border-color: #F59E0B; box-shadow: 0 4px 0 #D97706; color: #92400E; }
+    /* Vibrant color themes */
+    .option-btn:nth-child(1) { border-color: #3B82F6; box-shadow: 0 3px 0 #2563EB; color: #1E40AF; }
+    .option-btn:nth-child(2) { border-color: #EC4899; box-shadow: 0 3px 0 #DB2777; color: #9D174D; }
+    .option-btn:nth-child(3) { border-color: #10B981; box-shadow: 0 3px 0 #059669; color: #065F46; }
+    .option-btn:nth-child(4) { border-color: #F59E0B; box-shadow: 0 3px 0 #D97706; color: #92400E; }
 
-    /* Correct / Wrong States */
+    /* States */
     .option-btn.correct-ans {
       background: #D1FAE5 !important;
       border-color: #10B981 !important;
       color: #065F46 !important;
-      box-shadow: 0 4px 0 #059669 !important;
+      box-shadow: 0 3px 0 #059669 !important;
     }
 
     .option-btn.wrong-ans {
       background: #FEE2E2 !important;
       border-color: #EF4444 !important;
       color: #991B1B !important;
-      box-shadow: 0 4px 0 #DC2626 !important;
+      box-shadow: 0 3px 0 #DC2626 !important;
     }
 
-    /* Navigation Footer Controls */
+    .option-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.95;
+    }
+
+    /* Footer Navigation */
     .nav-footer {
       display: flex;
-      gap: 12px;
+      gap: 10px;
     }
 
     .nav-btn {
       flex: 1;
       padding: 12px;
-      border-radius: 12px;
-      font-size: 1rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
       font-weight: 800;
       cursor: pointer;
       border: none;
-      transition: all 0.15s ease;
     }
 
     .btn-prev {
       background: #E2E8F0;
       color: #475569;
-      box-shadow: 0 4px 0 #CBD5E1;
-    }
-    .btn-prev:active:not(:disabled) {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #CBD5E1;
+      box-shadow: 0 3px 0 #CBD5E1;
     }
     .btn-prev:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
     }
 
     .btn-next {
       background: var(--primary-purple);
       color: white;
-      box-shadow: 0 4px 0 var(--primary-purple-hover);
-    }
-    .btn-next:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 var(--primary-purple-hover);
+      box-shadow: 0 3px 0 var(--primary-purple-hover);
     }
 
-    /* Result Screen */
+    /* Results Screen */
     .result-box {
       text-align: center;
       padding: 10px 0;
     }
 
     .score-circle {
-      width: 110px;
-      height: 110px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       background: var(--bg-gradient);
       color: white;
@@ -231,50 +223,41 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 15px auto;
-      box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+      margin: 12px auto;
     }
 
     .score-number {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-family: 'Fredoka', sans-serif;
       line-height: 1;
     }
 
     .score-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
     }
 
     .time-taken-badge {
       background: #F1F5F9;
       color: #334155;
-      padding: 10px 16px;
-      border-radius: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
       font-weight: 700;
-      margin: 14px 0;
-      font-size: 0.95rem;
+      margin: 12px 0;
+      font-size: 0.9rem;
     }
 
     .restart-btn {
-      margin-top: 10px;
       width: 100%;
-      padding: 15px;
+      padding: 14px;
       background: var(--primary-purple);
       color: white;
       border: none;
-      border-radius: 14px;
-      font-size: 1.05rem;
+      border-radius: 12px;
+      font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 6px 0 var(--primary-purple-hover);
-      transition: all 0.15s ease;
-    }
-
-    .restart-btn:active {
-      transform: translateY(4px);
-      box-shadow: 0 2px 0 var(--primary-purple-hover);
+      box-shadow: 0 4px 0 var(--primary-purple-hover);
     }
 
     .hidden {
@@ -291,14 +274,104 @@
     <p>Upload your CSV question bank to start playing!</p>
     <label for="csv-file" class="custom-file-upload">
       📁 Select CSV File
+    </label>
+    <input type="file" id="csv-file" accept=".csv" />
+  </div>
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen" class="hidden">
+    <div class="quiz-header">
+      <div class="pill progress-pill" id="progress-text">1/10</div>
+      <div class="pill timer-pill" id="timer-text">⏱️ 00:00</div>
+      <div class="pill score-pill" id="score-text">Score: 0</div>
+    </div>
     
-culateCurrentScore()}`;
+    <h2 class="question-title" id="question-text">Question loading...</h2>
+    <div class="options-grid" id="options-container"></div>
+
+    <!-- Navigation Footer -->
+    <div class="nav-footer">
+      <button class="nav-btn btn-prev" id="prev-btn" onclick="prevQuestion()">← Prev</button>
+      <button class="nav-btn btn-next" id="next-btn" onclick="nextQuestion()">Next →</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen" class="hidden result-box">
+    <h1>🎉 Quiz Completed!</h1>
+    <div class="score-circle">
+      <span class="score-number" id="final-score">0/0</span>
+      <span class="score-label">Score</span>
+    </div>
+    <div class="time-taken-badge" id="time-taken-text">⏱️ Total Time Taken: 0m 0s</div>
+    <p id="feedback-text" style="color: #64748B; font-weight: 700; margin-bottom: 12px;"></p>
+    <button class="restart-btn" onclick="location.reload()">🔄 Load New Quiz</button>
+  </div>
+</div>
+
+<script>
+  let questions = [];
+  let currentIndex = 0;
+  let userAnswers = [];
+  let timerInterval = null;
+  let totalSeconds = 0;
+
+  document.getElementById('csv-file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        questions = results.data.map(row => {
+          const clean = {};
+          Object.keys(row).forEach(key => {
+            const cleanKey = key.trim().toLowerCase();
+            clean[cleanKey] = row[key] ? row[key].trim() : '';
+          });
+          return {
+            Question: clean['question'] || clean['q'] || '',
+            OptionA: clean['optiona'] || clean['choice1'] || clean['a'] || '',
+            OptionB: clean['optionb'] || clean['choice2'] || clean['b'] || '',
+            OptionC: clean['optionc'] || clean['choice3'] || clean['c'] || '',
+            OptionD: clean['optiond'] || clean['choice4'] || clean['d'] || '',
+            Correct: clean['correct'] || clean['answer'] || clean['right'] || ''
+          };
+        }).filter(q => q.Question && q.Correct);
+
+        if (questions.length > 0) {
+          userAnswers = new Array(questions.length).fill(null);
+          document.getElementById('upload-screen').classList.add('hidden');
+          document.getElementById('quiz-screen').classList.remove('hidden');
+          startTimer();
+          showQuestion();
+        } else {
+          alert('Could not find valid columns in CSV. Ensure header names are: Question, OptionA, OptionB, OptionC, OptionD, Correct');
+        }
+      }
+    });
+  });
+
+  function startTimer() {
+    totalSeconds = 0;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      totalSeconds++;
+      const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+      const secs = (totalSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('timer-text').innerText = `⏱️ ${mins}:${secs}`;
+    }, 1000);
+  }
+
+  function showQuestion() {
+    const q = questions[currentIndex];
+    
+    document.getElementById('progress-text').innerText = `${currentIndex + 1}/${questions.length}`;
+    document.getElementById('score-text').innerText = `Score: ${calculateCurrentScore()}`;
     document.getElementById('question-text').innerText = q.Question;
     
-    // Manage Prev Button State
     document.getElementById('prev-btn').disabled = (currentIndex === 0);
-    
-    // Manage Next Button Label
     document.getElementById('next-btn').innerText = (currentIndex === questions.length - 1) ? 'Finish 🏁' : 'Next →';
 
     const container = document.getElementById('options-container');
@@ -311,8 +384,8 @@ culateCurrentScore()}`;
       const btn = document.createElement('button');
       btn.className = 'option-btn';
       btn.innerText = choice;
+      btn.setAttribute('data-choice', choice);
       
-      // If already answered before, render the state
       if (savedAnswer !== null) {
         if (choice.trim().toLowerCase() === q.Correct.trim().toLowerCase()) {
           btn.classList.add('correct-ans');
@@ -321,7 +394,7 @@ culateCurrentScore()}`;
           btn.classList.add('wrong-ans');
           btn.innerText = `${choice}  ✗`;
         }
-        btn.disabled = true; // Lock choices if already answered in review mode
+        btn.disabled = true;
       } else {
         btn.onclick = () => selectAnswer(btn, choice, q.Correct);
       }
@@ -334,7 +407,6 @@ culateCurrentScore()}`;
     userAnswers[currentIndex] = selectedText;
     const allButtons = document.querySelectorAll('.option-btn');
     
-    // Lock all buttons on this question once selected
     allButtons.forEach(btn => btn.disabled = true);
 
     const isCorrect = selectedText.trim().toLowerCase() === correctText.trim().toLowerCase();
@@ -346,33 +418,8 @@ culateCurrentScore()}`;
       selectedBtn.classList.add('wrong-ans');
       selectedBtn.innerText = `${selectedText}  ✗`;
 
-      // Highlight correct answer
-      allButtons.forEach(btn => {
-        if (btn.innerText.trim().toLowerCase() === correctText.trim().toLowerCase()) {
-          btn.classList.add('correct-ans');
-          btn.innerText = `${btn.innerText}  ✓`;
-        }
-      });
-    }
-
-    document.getElementById('score-text').innerText = `Score: ${calculateCurrentScore()}`;
-  }
-
-  function calculateCurrentScore() {
-    let score = 0;
-    questions.forEach((q, idx) => {
-      const ans = userAnswers[idx];
-      if (ans && ans.trim().toLowerCase() === q.Correct.trim().toLowerCase()) {
-        score++;
-      }
-    });
-    return score;
-  }
-
-  function prevQuestion() {
-    if (currentIndex > 0) {
-      currentIndex--;
-      showQuestion();
+      allButtons.forEach(btn =>
+n();
     }
   }
 
